@@ -1,7 +1,20 @@
+using ShubT.Web.Services;
+using ShubT.Web.Services.Interfaces;
+using ShubT.Web.Utils;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<ICouponService, CouponService>();
+MiscUtils.CouponAPIBase = builder.Configuration["ServiceUrls:CouponAPI"];
+
+//services
+builder.Services.AddScoped<IBaseService, BaseService>();
+builder.Services.AddScoped<ICouponService, CouponService>();
 
 var app = builder.Build();
 

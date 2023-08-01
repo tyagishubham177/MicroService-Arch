@@ -7,7 +7,7 @@ using ShubT.Services.CouponsAPI.Models;
 
 namespace ShubT.Services.CouponsAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/coupon")]
     [ApiController]
     public class CouponAPIController : ControllerBase
     {
@@ -90,6 +90,19 @@ namespace ShubT.Services.CouponsAPI.Controllers
         {
             try
             {
+                if(couponDTO == null) 
+                {
+                    _responseDTO.IsSuccess = false;
+                    _responseDTO.DisplayMessage = "Coupon data is null";
+                    return BadRequest(_responseDTO);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _responseDTO.IsSuccess = false;
+                    _responseDTO.DisplayMessage = "Coupon data is not valid";
+                    return BadRequest(_responseDTO);
+                }
+
                 var coupon = _mapper.Map<Coupon>(couponDTO);
                 _context.Coupons.Add(coupon);
                 _context.SaveChanges();
@@ -105,11 +118,11 @@ namespace ShubT.Services.CouponsAPI.Controllers
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] Coupon coupon)
+        public IActionResult Update([FromBody] CouponDTO couponDTO)
         {
             try
             {
-                var existingCoupon = _context.Coupons.FirstOrDefault(c => c.Id == coupon.Id);
+                var existingCoupon = _context.Coupons.FirstOrDefault(c => c.Id == couponDTO.Id);
                 if (existingCoupon == null)
                 {
                     _responseDTO.IsSuccess = false;
@@ -118,10 +131,10 @@ namespace ShubT.Services.CouponsAPI.Controllers
                 }
 
                 //_context.Coupons.Update(coupon); -- not working because I added the above check
-                _context.Entry(existingCoupon).CurrentValues.SetValues(coupon);
+                _context.Entry(existingCoupon).CurrentValues.SetValues(couponDTO);
                 _context.SaveChanges();
-                _responseDTO.Result = coupon;
-                return CreatedAtAction(nameof(Get), new { id = coupon.Id }, _responseDTO);
+                _responseDTO.Result = couponDTO;
+                return CreatedAtAction(nameof(Get), new { id = couponDTO.Id }, _responseDTO);
             }
             catch (Exception ex)
             {
