@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShubT.Services.CouponsAPI.Data;
@@ -9,6 +10,7 @@ namespace ShubT.Services.CouponsAPI.Controllers
 {
     [Route("api/coupon")]
     [ApiController]
+    [Authorize]
     public class CouponAPIController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -86,6 +88,7 @@ namespace ShubT.Services.CouponsAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "ADMIN")]
         public IActionResult Create([FromBody] CouponDTO couponDTO)
         {
             try
@@ -118,6 +121,7 @@ namespace ShubT.Services.CouponsAPI.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "ADMIN")]
         public IActionResult Update([FromBody] CouponDTO couponDTO)
         {
             try
@@ -145,6 +149,7 @@ namespace ShubT.Services.CouponsAPI.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "ADMIN")]
         public IActionResult Delete(int id)
         {
             try

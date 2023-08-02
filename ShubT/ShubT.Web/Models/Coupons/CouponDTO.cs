@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ShubT.Web.Models
+namespace ShubT.Web.Models.Coupons
 {
     public class CouponDTO
     {

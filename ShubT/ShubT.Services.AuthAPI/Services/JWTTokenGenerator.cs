@@ -16,7 +16,7 @@ namespace ShubT.Services.AuthAPI.Services
         {
             _jwtOptions = jwtOptions.Value;
         }
-        public string GenerateToken(AppUser user)
+        public string GenerateToken(AppUser user, IEnumerable<string> roles)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -29,10 +29,12 @@ namespace ShubT.Services.AuthAPI.Services
                 new Claim(JwtRegisteredClaimNames.Name, user.UserName),
             };
 
+            claimsList.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Audience = _jwtOptions.Audience,
-                Issuer = _jwtOptions.Issuer, 
+                Issuer = _jwtOptions.Issuer,
                 Subject = new ClaimsIdentity(claimsList),
                 Expires = DateTime.UtcNow.AddDays(_jwtOptions.ExpiryInDays),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),

@@ -9,20 +9,28 @@ namespace ShubT.Web.Services
     public class BaseService : IBaseService
     {
         private readonly IHttpClientFactory _clientFactory;
+        private readonly ITokenProvider _tokenProvider;
 
-        public BaseService(IHttpClientFactory clientFactory)
+        public BaseService(IHttpClientFactory clientFactory, ITokenProvider tokenProvider)
         {
             _clientFactory = clientFactory;
+            _tokenProvider = tokenProvider;
         }
 
-        public async Task<ResponseDTO?> SendAsync(RequestDTO requestDTO)
+        public async Task<ResponseDTO?> SendAsync(RequestDTO requestDTO, bool withBearer = true)
         {
             try
             {
                 HttpClient httpClient = _clientFactory.CreateClient("ShubTAPI");
                 HttpRequestMessage message = new();
                 message.Headers.Add("Accept", "application/json");
-                //add token
+
+                if (withBearer)
+                {
+                    var token = _tokenProvider.GetToken();
+                    message.Headers.Add("Authorization", $"Bearer {token}");
+                }
+
                 message.RequestUri = new Uri(requestDTO.Url);
 
                 message.Method = requestDTO.ApiType switch

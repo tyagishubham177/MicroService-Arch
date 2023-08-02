@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using ShubT.Web.Models;
+using ShubT.Web.Models.Coupons;
 using ShubT.Web.Services.Interfaces;
 
 namespace ShubT.Web.Controllers

@@ -1,4 +1,5 @@
 ﻿using ShubT.Web.Models;
+using ShubT.Web.Models.Coupons;
 using ShubT.Web.Services.Interfaces;
 using ShubT.Web.Utils;
 

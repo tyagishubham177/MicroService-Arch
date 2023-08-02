@@ -27,7 +27,7 @@ namespace ShubT.Services.AuthAPI.Controllers
             {
                 _responseDTO.IsSuccess = false;
                 _responseDTO.DisplayMessage = errorMessage;
-                return BadRequest(_responseDTO);
+                return Ok(_responseDTO);
             }
 
             return Ok(_responseDTO);
@@ -42,7 +42,7 @@ namespace ShubT.Services.AuthAPI.Controllers
             {
                 _responseDTO.IsSuccess = false;
                 _responseDTO.DisplayMessage = "Invalid username or password";
-                return BadRequest(_responseDTO);
+                return Ok(_responseDTO);
             }
 
             _responseDTO.Result = loginResponse;
