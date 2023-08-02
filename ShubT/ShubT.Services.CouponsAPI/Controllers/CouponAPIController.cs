@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShubT.Services.CouponsAPI.Data;
 using ShubT.Services.CouponsAPI.DTOs;
