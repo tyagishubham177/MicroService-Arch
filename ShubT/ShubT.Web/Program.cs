@@ -12,17 +12,20 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<ICouponService, CouponService>();
 builder.Services.AddHttpClient<IAuthService, AuthService>();
+builder.Services.AddHttpClient<IProductService, ProductService>();
 MiscUtils.CouponAPIBase = builder.Configuration["ServiceUrls:CouponAPI"];
 MiscUtils.AuthAPIBase = builder.Configuration["ServiceUrls:AuthAPI"];
+MiscUtils.ProductAPIBase = builder.Configuration["ServiceUrls:ProductAPI"];
 
 //services
 builder.Services.AddScoped<IBaseService, BaseService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ITokenProvider, TokenProvider>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options => 
+    .AddCookie(options =>
     {
         options.ExpireTimeSpan = TimeSpan.FromHours(10);
         options.LoginPath = "/Auth/Login";

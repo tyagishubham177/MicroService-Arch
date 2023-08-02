@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using ShubT.Web.Services.Interfaces;
+﻿using ShubT.Web.Services.Interfaces;
 using ShubT.Web.Utils;
 
 namespace ShubT.Web.Services

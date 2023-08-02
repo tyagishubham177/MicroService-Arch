@@ -1,11 +1,20 @@
 ﻿namespace ShubT.Web.Models
 {
-    public enum ApiType
+    public class ProjectEnums
     {
-        GET,
-        POST,
-        PUT,
-        DELETE,
-        PATCH
+        public enum ApiType
+        {
+            GET,
+            POST,
+            PUT,
+            DELETE,
+            PATCH
+        }
+
+        public enum ContentType
+        {
+            Json,
+            MultipartFormData,
+        }
     }
 }

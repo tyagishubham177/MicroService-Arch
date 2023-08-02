@@ -2,6 +2,7 @@
 using ShubT.Web.Models.Coupons;
 using ShubT.Web.Services.Interfaces;
 using ShubT.Web.Utils;
+using static ShubT.Web.Models.ProjectEnums;
 
 namespace ShubT.Web.Services
 {
