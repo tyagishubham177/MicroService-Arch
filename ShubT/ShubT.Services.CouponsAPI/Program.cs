@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using ShubT.Services.CouponsAPI;
 using ShubT.Services.CouponsAPI.Data;
@@ -27,6 +26,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
