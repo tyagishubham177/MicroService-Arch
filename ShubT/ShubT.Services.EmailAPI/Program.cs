@@ -1,10 +1,8 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using ShubT.MessageBus;
-using ShubT.Services.AuthAPI.Data;
-using ShubT.Services.AuthAPI.Models;
-using ShubT.Services.AuthAPI.Services;
-using ShubT.Services.AuthAPI.Services.Interfaces;
+using ShubT.Services.EmailAPI.Data;
+using ShubT.Services.EmailAPI.Extensions;
+using ShubT.Services.EmailAPI.Messaging;
+using ShubT.Services.EmailAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,15 +11,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.Configure<JWTOptions>(builder.Configuration.GetSection("APISettings:JWTOptions"));
-builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
+optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+builder.Services.AddSingleton(new EmailService(optionsBuilder.Options));
+
+builder.Services.AddSingleton<IAzureServiceBusConsumer, AzureServiceBusConsumer>();
 
 builder.Services.AddControllers();
-
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IJWTTokenGenerator, JWTTokenGenerator>();
-builder.Services.AddScoped<IMessageBus, MessageBus>();
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -43,6 +39,8 @@ app.MapControllers();
 
 ApplyMigrations();
 
+app.UseAzureServiceBusConsumer();
+
 app.Run();
 
 void ApplyMigrations()
@@ -53,4 +51,3 @@ void ApplyMigrations()
     if (context.Database.GetPendingMigrations().Any())
         context.Database.Migrate();
 }
-

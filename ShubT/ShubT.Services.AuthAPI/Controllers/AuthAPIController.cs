@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ShubT.MessageBus;
 using ShubT.Services.AuthAPI.DTOs;
 using ShubT.Services.AuthAPI.Services.Interfaces;
 
@@ -9,12 +10,17 @@ namespace ShubT.Services.AuthAPI.Controllers
     public class AuthAPIController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IMessageBus _messageBus;
+        private readonly IConfiguration _configuration;
         protected ResponseDTO _responseDTO;
 
-        public AuthAPIController(IAuthService authService)
+        public AuthAPIController(IAuthService authService, IMessageBus messageBus, IConfiguration configuration)
         {
             _authService = authService;
+            _messageBus = messageBus;
             _responseDTO = new ResponseDTO();
+            _configuration = configuration;
+
         }
 
         [HttpPost]
@@ -29,6 +35,8 @@ namespace ShubT.Services.AuthAPI.Controllers
                 _responseDTO.DisplayMessage = errorMessage;
                 return Ok(_responseDTO);
             }
+            
+            await _messageBus.PublishMessage(model.Email, _configuration.GetValue<string>("TopicAndQueueNames:RegisterUserQueue"));
 
             return Ok(_responseDTO);
         }
