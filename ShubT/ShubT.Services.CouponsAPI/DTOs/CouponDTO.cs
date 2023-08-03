@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ShubT.Services.CouponsAPI.DTOs
+﻿namespace ShubT.Services.CouponsAPI.DTOs
 {
     public class CouponDTO
     {

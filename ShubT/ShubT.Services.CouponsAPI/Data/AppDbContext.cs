@@ -22,7 +22,7 @@ namespace ShubT.Services.CouponsAPI.Data
                 DiscountAmount = 10,
                 MinAmount = 20
             });
-            
+
             modelBuilder.Entity<Coupon>().HasData(new Coupon
             {
                 Id = 2,

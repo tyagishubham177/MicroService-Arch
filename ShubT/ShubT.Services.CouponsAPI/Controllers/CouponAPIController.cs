@@ -93,7 +93,7 @@ namespace ShubT.Services.CouponsAPI.Controllers
         {
             try
             {
-                if(couponDTO == null) 
+                if (couponDTO == null)
                 {
                     _responseDTO.IsSuccess = false;
                     _responseDTO.DisplayMessage = "Coupon data is null";

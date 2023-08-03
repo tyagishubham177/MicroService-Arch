@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShubT.Services.ShoppingCartAPI.Data;
 using ShubT.Services.ShoppingCartAPI.DTOs;
 using ShubT.Services.ShoppingCartAPI.Models;
 using ShubT.Services.ShoppingCartAPI.Service.Interfaces;
-using System.Reflection.PortableExecutable;
 
 namespace ShubT.Services.ShoppingCartAPI.Controllers
 {

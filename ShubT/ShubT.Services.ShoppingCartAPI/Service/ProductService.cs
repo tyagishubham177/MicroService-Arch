@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ShubT.Services.ShoppingCartAPI.DTOs;
 using ShubT.Services.ShoppingCartAPI.Service.Interfaces;
-using System.Text.Json.Serialization;
 
 namespace ShubT.Services.ShoppingCartAPI.Service
 {

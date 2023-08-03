@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ShubT.Web.Models.ShoppingCart
+﻿namespace ShubT.Web.Models.ShoppingCart
 {
     public class CartHeaderDTO
     {

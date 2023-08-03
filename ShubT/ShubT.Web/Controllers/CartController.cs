@@ -28,7 +28,7 @@ namespace ShubT.Web.Controllers
         {
             return View(await LoadCartDTOBasedOnLoggedInUser());
         }
-        
+
         /*[HttpPost]
         [ActionName("Checkout")]
         public async Task<IActionResult> Checkout(CartDTO cartDto)
@@ -82,7 +82,7 @@ namespace ShubT.Web.Controllers
             //redirect to some error page based on status
             return View(orderId);
         }*/
-        
+
         /*[HttpPost]
         [ActionName("Checkout")]
         public async Task<IActionResult> Checkout(CartDTO cartDto)
