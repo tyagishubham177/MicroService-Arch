@@ -9,7 +9,6 @@ namespace ShubT.Services.CouponsAPI.Controllers
 {
     [Route("api/coupon")]
     [ApiController]
-    [Authorize]
     public class CouponAPIController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -24,6 +23,7 @@ namespace ShubT.Services.CouponsAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Get()
         {
             try
@@ -41,6 +41,7 @@ namespace ShubT.Services.CouponsAPI.Controllers
 
 
         [HttpGet("{id}")]
+        [Authorize]
         public IActionResult Get(int id)
         {
             try
