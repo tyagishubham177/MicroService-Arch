@@ -8,11 +8,11 @@
         public double DiscountTotal { get; set; }
         public double CartTotal { get; set; }
 
-        /*[Required]
+        //[Required]
         public string? Name { get; set; }
-        [Required]
+        //[Required]
         public string? Phone { get; set; }
-        [Required]
-        public string? Email { get; set; }*/
+        //[Required]
+        public string? Email { get; set; }
     }
 }

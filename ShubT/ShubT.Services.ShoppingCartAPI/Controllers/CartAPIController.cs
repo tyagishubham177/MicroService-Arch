@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
+using Azure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using ShubT.MessageBus;
 using ShubT.Services.ShoppingCartAPI.Data;
 using ShubT.Services.ShoppingCartAPI.DTOs;
 using ShubT.Services.ShoppingCartAPI.Models;
@@ -16,15 +19,20 @@ namespace ShubT.Services.ShoppingCartAPI.Controllers
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
         private readonly ICouponService _couponService;
+        private readonly IMessageBus _messageBus;
+        private readonly IConfiguration _configuration;
         private ResponseDTO _responseDTO;
 
-        public CartAPIController(AppDbContext context, IMapper mapper, IProductService productService, ICouponService couponService)
+        public CartAPIController(AppDbContext context, IMapper mapper, IProductService productService,
+            ICouponService couponService, IMessageBus messageBus, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
             _responseDTO = new ResponseDTO();
             _productService = productService;
             _couponService = couponService;
+            _messageBus = messageBus;
+            _configuration = configuration;
         }
 
         [HttpGet("GetCart/{userId}")]
@@ -184,6 +192,23 @@ namespace ShubT.Services.ShoppingCartAPI.Controllers
                 _responseDTO.DisplayMessage = ex.Message;
             }
 
+            return _responseDTO;
+        }
+
+        [HttpPost("EmailCartRequest")]
+        public async Task<object> EmailCartRequest([FromBody] CartDTO cartDto)
+        {
+            try
+            {
+                string topic_queue_name = _configuration.GetValue<string>("TopicAndQueueNames:EmailShoppingCartQueue");
+                await _messageBus.PublishMessage(cartDto, topic_queue_name);
+                _responseDTO.Result = true;
+            }
+            catch (Exception ex)
+            {
+                _responseDTO.IsSuccess = false;
+                _responseDTO.DisplayMessage = ex.ToString();
+            }
             return _responseDTO;
         }
     }

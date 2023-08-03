@@ -3,7 +3,7 @@
 
 @if(Model.CartHeaderDTO != null && Model.CartDetailsDTO.Count() > 0) 
 {
-    <form method="post">
+    <form method="post" asp-action="EmailCart">
         <br />
         <input asp-for="CartHeaderDTO.UserId" hidden/>
         <input asp-for="CartHeaderDTO.Id" hidden/>

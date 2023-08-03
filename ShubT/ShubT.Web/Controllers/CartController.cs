@@ -162,8 +162,8 @@ namespace ShubT.Web.Controllers
             return View();
         }
 
-        /*[HttpPost]
-        public async Task<IActionResult> EmailCart(CartDTO cartDto)
+        [HttpPost]
+        public async Task<IActionResult> EmailCart(CartDTO cartDTO)
         {
             CartDTO cart = await LoadCartDTOBasedOnLoggedInUser();
             cart.CartHeaderDTO.Email = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Email)?.FirstOrDefault()?.Value;
@@ -174,7 +174,7 @@ namespace ShubT.Web.Controllers
                 return RedirectToAction(nameof(CartIndex));
             }
             return View();
-        }*/
+        }
 
         [HttpPost]
         public async Task<IActionResult> RemoveCoupon(CartDTO cartDto)
