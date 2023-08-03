@@ -35,7 +35,6 @@ namespace ShubT.Services.ShoppingCartAPI.Controllers
             try
             {
                 CartDTO cartDTO = new CartDTO();
-                CouponDTO coupon = new CouponDTO();
 
                 var cartHeader = _context.CartHeaders.First(u => u.UserId == userId);
                 cartDTO.CartHeaderDTO = _mapper.Map<CartHeaderDTO>(cartHeader);
@@ -45,24 +44,22 @@ namespace ShubT.Services.ShoppingCartAPI.Controllers
 
                 var productList = await _productService.GetAllProductsAsync();
 
+                foreach (var item in cartDTO.CartDetailsDTO)
+                {
+                    item.ProductDTO = productList.FirstOrDefault(u => u.ProductId == item.ProductId);
+                    cartDTO.CartHeaderDTO.CartTotal += item.Count * item.ProductDTO.Price;
+                }
+
+                //apply coupon if any
                 if (!string.IsNullOrEmpty(cartDTO.CartHeaderDTO.CouponCode))
-                    coupon = await _couponService.GetCouponsByCodeAsync(cartDTO.CartHeaderDTO.CouponCode);
-
-                double totalAmount = 0d;
-
-                foreach (var cartDetail in cartDTO.CartDetailsDTO)
                 {
-                    var product = productList.FirstOrDefault(p => p.ProductId == cartDetail.ProductId);
-                    totalAmount += cartDetail.Count * product.Price;
+                    var coupon = await _couponService.GetCouponsByCodeAsync(cartDTO.CartHeaderDTO.CouponCode);
+                    if (coupon != null && cartDTO.CartHeaderDTO.CartTotal > coupon.MinAmount)
+                    {
+                        cartDTO.CartHeaderDTO.CartTotal -= coupon.DiscountAmount;
+                        cartDTO.CartHeaderDTO.DiscountTotal = coupon.DiscountAmount;
+                    }
                 }
-
-                if (coupon.CouponCode != null && coupon.MinAmount <= totalAmount)
-                {
-                    cartDTO.CartHeaderDTO.DiscountTotal = coupon.DiscountAmount;
-                    cartDTO.CartHeaderDTO.CartTotal = totalAmount - coupon.DiscountAmount;
-                }
-                else
-                    cartDTO.CartHeaderDTO.CartTotal = totalAmount;
 
                 _responseDTO.Result = cartDTO;
             }
