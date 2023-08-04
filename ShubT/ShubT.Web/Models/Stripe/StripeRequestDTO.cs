@@ -1,4 +1,6 @@
-﻿namespace ShubT.Services.OrderAPI.DTOs
+﻿using ShubT.Web.Models.Orders;
+
+namespace ShubT.Web.Models.Stripe
 {
     public class StripeRequestDTO
     {

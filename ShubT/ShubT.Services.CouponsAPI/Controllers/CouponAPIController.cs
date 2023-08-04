@@ -109,6 +109,17 @@ namespace ShubT.Services.CouponsAPI.Controllers
                 var coupon = _mapper.Map<Coupon>(couponDTO);
                 _context.Coupons.Add(coupon);
                 _context.SaveChanges();
+
+                var options = new Stripe.CouponCreateOptions
+                {
+                    AmountOff = (long)(couponDTO.DiscountAmount * 100),
+                    Name = couponDTO.CouponCode,
+                    Currency = "inr",
+                    Id = couponDTO.CouponCode,
+                };
+                var service = new Stripe.CouponService();
+                service.Create(options);
+
                 _responseDTO.Result = couponDTO;
                 return CreatedAtAction(nameof(Get), new { id = coupon.Id }, _responseDTO);
             }
@@ -163,6 +174,10 @@ namespace ShubT.Services.CouponsAPI.Controllers
                 }
                 _context.Coupons.Remove(coupon);
                 _context.SaveChanges();
+
+                var service = new Stripe.CouponService();
+                service.Delete(coupon.CouponCode);
+
                 _responseDTO.Result = true;
                 return Ok(_responseDTO);
             }

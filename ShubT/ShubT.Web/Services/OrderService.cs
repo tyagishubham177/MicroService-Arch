@@ -1,5 +1,6 @@
 ﻿using ShubT.Web.Models;
 using ShubT.Web.Models.ShoppingCart;
+using ShubT.Web.Models.Stripe;
 using ShubT.Web.Services.Interfaces;
 using ShubT.Web.Utils;
 using static ShubT.Web.Models.ProjectEnums;
@@ -13,8 +14,6 @@ namespace ShubT.Web.Services
         {
             _baseService = baseService;
         }
-
-
 
         public async Task<ResponseDTO> CreateOrder(CartDTO cartDTO)
         {
@@ -51,6 +50,26 @@ namespace ShubT.Web.Services
                 ApiType = ApiType.POST,
                 Data = newStatus,
                 Url = MiscUtils.OrderAPIBase + "/api/order/UpdateOrderStatus/" + orderId
+            });
+        }
+
+        public async Task<ResponseDTO> CreateStripeSession(StripeRequestDTO stripeRequestDto)
+        {
+            return await _baseService.SendAsync(new RequestDTO()
+            {
+                ApiType = ApiType.POST,
+                Data = stripeRequestDto,
+                Url = MiscUtils.OrderAPIBase + "/api/order/CreateStripeSession"
+            });
+        }
+
+        public async Task<ResponseDTO> ValidateStripeSession(int orderHeaderId)
+        {
+            return await _baseService.SendAsync(new RequestDTO()
+            {
+                ApiType = ApiType.POST,
+                Data = orderHeaderId,
+                Url = MiscUtils.OrderAPIBase + "/api/order/ValidateStripeSession"
             });
         }
     }

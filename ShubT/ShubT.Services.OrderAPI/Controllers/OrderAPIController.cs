@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShubT.MessageBus;
@@ -9,6 +8,8 @@ using ShubT.Services.OrderAPI.DTOs;
 using ShubT.Services.OrderAPI.Models;
 using ShubT.Services.OrderAPI.Service.Interfaces;
 using ShubT.Web.Utils;
+using Stripe;
+using Stripe.Checkout;
 
 namespace ShubT.Services.OrderAPI.Controllers
 {
@@ -23,7 +24,7 @@ namespace ShubT.Services.OrderAPI.Controllers
         private readonly IMessageBus _messageBus;
         private readonly IConfiguration _configuration;
 
-        public OrderAPIController(AppDbContext context, IProductService productService, IMapper mapper, 
+        public OrderAPIController(AppDbContext context, IProductService productService, IMapper mapper,
             IConfiguration configuration, IMessageBus messageBus)
         {
             _context = context;
@@ -104,13 +105,12 @@ namespace ShubT.Services.OrderAPI.Controllers
         }
 
 
-        /*[Authorize]
+        [Authorize]
         [HttpPost("CreateStripeSession")]
-        public async Task<ResponseDTO> CreateStripeSession([FromBody] StripeRequestDto stripeRequestDto)
+        public async Task<ResponseDTO> CreateStripeSession([FromBody] StripeRequestDTO stripeRequestDto)
         {
             try
             {
-
                 var options = new SessionCreateOptions
                 {
                     SuccessUrl = stripeRequestDto.ApprovedUrl,
@@ -120,52 +120,45 @@ namespace ShubT.Services.OrderAPI.Controllers
 
                 };
 
-                var DiscountsObj = new List<SessionDiscountOptions>()
-                {
-                    new SessionDiscountOptions
-                    {
-                        Coupon=stripeRequestDto.OrderHeader.CouponCode
-                    }
-                };
+                var DiscountsObj = new List<SessionDiscountOptions>();
+                var discountOption = new SessionDiscountOptions();
+                discountOption.Coupon = stripeRequestDto.OrderHeaderDTO.CouponCode;
+                DiscountsObj.Add(discountOption);
 
-                foreach (var item in stripeRequestDto.OrderHeader.OrderDetails)
-                {
-                    var sessionLineItem = new SessionLineItemOptions
-                    {
-                        PriceData = new SessionLineItemPriceDataOptions
-                        {
-                            UnitAmount = (long)(item.Price * 100), // $20.99 -> 2099
-                            Currency = "usd",
-                            ProductData = new SessionLineItemPriceDataProductDataOptions
-                            {
-                                Name = item.Product.Name
-                            }
-                        },
-                        Quantity = item.Count
-                    };
 
+                foreach (var item in stripeRequestDto.OrderHeaderDTO.OrderDetails)
+                {
+                    var sessionLineItem = new SessionLineItemOptions();
+                    sessionLineItem.PriceData = new SessionLineItemPriceDataOptions();
+                    sessionLineItem.PriceData.ProductData = new SessionLineItemPriceDataProductDataOptions();
+
+                    sessionLineItem.PriceData.ProductData.Name = item.ProductDTO.Name;
+                    sessionLineItem.PriceData.UnitAmount = (long)(Math.Round(item.Price, 2) * 100);
+                    sessionLineItem.PriceData.Currency = "inr";
+                    sessionLineItem.Quantity = item.Count;
                     options.LineItems.Add(sessionLineItem);
                 }
 
-                if (stripeRequestDto.OrderHeader.Discount > 0)
+                if (stripeRequestDto.OrderHeaderDTO.Discount > 0)
                 {
                     options.Discounts = DiscountsObj;
                 }
+
                 var service = new SessionService();
                 Session session = service.Create(options);
                 stripeRequestDto.StripeSessionUrl = session.Url;
-                OrderHeader orderHeader = _db.OrderHeaders.First(u => u.OrderHeaderId == stripeRequestDto.OrderHeader.OrderHeaderId);
+                OrderHeader orderHeader = _context.OrderHeaders.First(u => u.OrderHeaderId == stripeRequestDto.OrderHeaderDTO.OrderHeaderId);
                 orderHeader.StripeSessionId = session.Id;
-                _db.SaveChanges();
-                _response.Result = stripeRequestDto;
+                _context.SaveChanges();
+                _responseDTO.Result = stripeRequestDto;
 
             }
             catch (Exception ex)
             {
-                _response.Message = ex.Message;
-                _response.IsSuccess = false;
+                _responseDTO.DisplayMessage = ex.Message;
+                _responseDTO.IsSuccess = false;
             }
-            return _response;
+            return _responseDTO;
         }
 
 
@@ -176,7 +169,7 @@ namespace ShubT.Services.OrderAPI.Controllers
             try
             {
 
-                OrderHeader orderHeader = _db.OrderHeaders.First(u => u.OrderHeaderId == orderHeaderId);
+                OrderHeader orderHeader = _context.OrderHeaders.First(u => u.OrderHeaderId == orderHeaderId);
 
                 var service = new SessionService();
                 Session session = service.Get(orderHeader.StripeSessionId);
@@ -186,11 +179,11 @@ namespace ShubT.Services.OrderAPI.Controllers
 
                 if (paymentIntent.Status == "succeeded")
                 {
-                    //then payment was successful
+                    //payment was successful
                     orderHeader.PaymentIntentId = paymentIntent.Id;
                     orderHeader.Status = MiscUtils.Status_Approved;
-                    _db.SaveChanges();
-                    RewardsDto rewardsDto = new()
+                    _context.SaveChanges();
+                    RewardsDTO rewardsDto = new()
                     {
                         OrderId = orderHeader.OrderHeaderId,
                         RewardsActivity = Convert.ToInt32(orderHeader.OrderTotal),
@@ -198,17 +191,17 @@ namespace ShubT.Services.OrderAPI.Controllers
                     };
                     string topicName = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedTopic");
                     await _messageBus.PublishMessage(rewardsDto, topicName);
-                    _response.Result = _mapper.Map<OrderHeaderDTO>(orderHeader);
+                    _responseDTO.Result = _mapper.Map<OrderHeaderDTO>(orderHeader);
                 }
 
             }
             catch (Exception ex)
             {
-                _response.Message = ex.Message;
-                _response.IsSuccess = false;
+                _responseDTO.DisplayMessage = ex.Message;
+                _responseDTO.IsSuccess = false;
             }
-            return _response;
-        } */
+            return _responseDTO;
+        }
 
 
         [Authorize]
@@ -220,7 +213,7 @@ namespace ShubT.Services.OrderAPI.Controllers
                 OrderHeader orderHeader = _context.OrderHeaders.First(u => u.OrderHeaderId == orderId);
                 if (orderHeader != null)
                 {
-                    /*if (newStatus == MiscUtils.Status_Cancelled)
+                    if (newStatus == MiscUtils.Status_Cancelled)
                     {
                         //we will give refund
                         var options = new RefundCreateOptions
@@ -231,7 +224,7 @@ namespace ShubT.Services.OrderAPI.Controllers
 
                         var service = new RefundService();
                         Refund refund = service.Create(options);
-                    }*/
+                    }
                     orderHeader.Status = newStatus;
                     _context.SaveChanges();
                 }

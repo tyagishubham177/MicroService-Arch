@@ -4,7 +4,9 @@ using Newtonsoft.Json;
 using ShubT.Web.Models;
 using ShubT.Web.Models.Orders;
 using ShubT.Web.Models.ShoppingCart;
+using ShubT.Web.Models.Stripe;
 using ShubT.Web.Services.Interfaces;
+using ShubT.Web.Utils;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace ShubT.Web.Controllers
@@ -43,46 +45,44 @@ namespace ShubT.Web.Controllers
             cart.CartHeaderDTO.Name = cartDto.CartHeaderDTO.Name;
 
             var response = await _orderService.CreateOrder(cart);
-            OrderHeaderDTO orderHeaderDto = JsonConvert.DeserializeObject<OrderHeaderDTO>(Convert.ToString(response.Result));
+            OrderHeaderDTO orderHeaderDTO = JsonConvert.DeserializeObject<OrderHeaderDTO>(Convert.ToString(response.Result));
 
             if (response != null && response.IsSuccess)
             {
-                /*get stripe session and redirect to stripe to place order
-                
                 var domain = Request.Scheme + "://" + Request.Host.Value + "/";
 
-                StripeRequestDto stripeRequestDto = new()
+                StripeRequestDTO stripeRequestDto = new()
                 {
-                    ApprovedUrl = domain + "cart/Confirmation?orderId=" + orderHeaderDto.OrderHeaderId,
+                    ApprovedUrl = domain + "cart/Confirmation?orderId=" + orderHeaderDTO.OrderHeaderId,
                     CancelUrl = domain + "cart/checkout",
-                    OrderHeader = orderHeaderDto
+                    OrderHeaderDTO = orderHeaderDTO
                 };
 
                 var stripeResponse = await _orderService.CreateStripeSession(stripeRequestDto);
-                StripeRequestDto stripeResponseResult = JsonConvert.DeserializeObject<StripeRequestDto>
+                StripeRequestDTO stripeResponseResult = JsonConvert.DeserializeObject<StripeRequestDTO>
                                             (Convert.ToString(stripeResponse.Result));
                 Response.Headers.Add("Location", stripeResponseResult.StripeSessionUrl);
-                return new StatusCodeResult(303);*/
+                return new StatusCodeResult(303);
             }
 
             return View(cart);
         }
 
-        /*public async Task<IActionResult> Confirmation(int orderId)
+        public async Task<IActionResult> Confirmation(int orderId)
         {
             ResponseDTO response = await _orderService.ValidateStripeSession(orderId);
             if (response != null & response.IsSuccess)
             {
 
-                OrderHeaderDto orderHeader = JsonConvert.DeserializeObject<OrderHeaderDto>(Convert.ToString(response.Result));
-                if (orderHeader.Status == SD.Status_Approved)
+                OrderHeaderDTO orderHeader = JsonConvert.DeserializeObject<OrderHeaderDTO>(Convert.ToString(response.Result));
+                if (orderHeader.Status == MiscUtils.Status_Approved)
                 {
                     return View(orderId);
                 }
             }
             //redirect to some error page based on status
             return View(orderId);
-        }*/
+        }
 
         public async Task<IActionResult> Remove(int cartDetailsId)
         {
