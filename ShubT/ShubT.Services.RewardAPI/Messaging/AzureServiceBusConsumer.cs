@@ -1,7 +1,6 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Newtonsoft.Json;
 using ShubT.Services.RewardAPI.Message;
-using ShubT.Services.RewardAPI.Messaging;
 using ShubT.Services.RewardAPI.Services;
 using System.Text;
 
@@ -70,7 +69,5 @@ namespace ShubT.Services.RewardAPI.Messaging
             Console.WriteLine(args.Exception.ToString());
             return Task.CompletedTask;
         }
-
-
     }
 }

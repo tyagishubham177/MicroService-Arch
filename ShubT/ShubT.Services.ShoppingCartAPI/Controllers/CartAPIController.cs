@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using Azure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using ShubT.MessageBus;
 using ShubT.Services.ShoppingCartAPI.Data;
 using ShubT.Services.ShoppingCartAPI.DTOs;

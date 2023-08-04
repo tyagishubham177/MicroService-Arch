@@ -35,7 +35,7 @@ namespace ShubT.Services.AuthAPI.Controllers
                 _responseDTO.DisplayMessage = errorMessage;
                 return Ok(_responseDTO);
             }
-            
+
             await _messageBus.PublishMessage(model.Email, _configuration.GetValue<string>("TopicAndQueueNames:RegisterUserQueue"));
 
             return Ok(_responseDTO);

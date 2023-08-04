@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using ShubT.Services.OrderAPI.DTOs;
 using System.ComponentModel.DataAnnotations;
-using ShubT.Services.OrderAPI.DTOs;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShubT.Services.OrderAPI.Models
 {

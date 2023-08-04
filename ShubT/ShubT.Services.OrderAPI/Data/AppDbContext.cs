@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ShubT.Services.OrderAPI.DTOs;
 using ShubT.Services.OrderAPI.Models;
 
 namespace ShubT.Services.OrderAPI.Data

@@ -1,6 +1,4 @@
-﻿using ShubT.Services.OrderAPI.DTOs;
-
-namespace ShubT.Services.OrderAPI.DTOs
+﻿namespace ShubT.Services.OrderAPI.DTOs
 {
     public class OrderDetailsDTO
     {

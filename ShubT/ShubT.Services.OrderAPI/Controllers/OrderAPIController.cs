@@ -77,8 +77,6 @@ namespace ShubT.Services.OrderAPI.Controllers
             return _responseDTO;
         }
 
-
-
         [Authorize]
         [HttpPost("CreateOrder")]
         public async Task<ResponseDTO> CreateOrder([FromBody] CartDTO cartDto)
@@ -189,7 +187,7 @@ namespace ShubT.Services.OrderAPI.Controllers
                         RewardsActivity = Convert.ToInt32(orderHeader.OrderTotal),
                         UserId = orderHeader.UserId
                     };
-                    
+
                     string topicName = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedTopic");
                     await _messageBus.PublishMessage(rewardsDTO, topicName);
 
@@ -204,7 +202,6 @@ namespace ShubT.Services.OrderAPI.Controllers
             }
             return _responseDTO;
         }
-
 
         [Authorize]
         [HttpPost("UpdateOrderStatus/{orderId:int}")]
