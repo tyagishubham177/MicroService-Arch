@@ -147,7 +147,7 @@ namespace ShubT.Services.OrderAPI.Controllers
                 stripeRequestDto.StripeSessionUrl = session.Url;
                 OrderHeader orderHeader = _context.OrderHeaders.First(u => u.OrderHeaderId == stripeRequestDto.OrderHeaderDTO.OrderHeaderId);
                 orderHeader.StripeSessionId = session.Id;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
                 _responseDTO.Result = stripeRequestDto;
 
             }
@@ -225,7 +225,7 @@ namespace ShubT.Services.OrderAPI.Controllers
                         Refund refund = service.Create(options);
                     }
                     orderHeader.Status = newStatus;
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
                 }
             }
             catch (Exception ex)
