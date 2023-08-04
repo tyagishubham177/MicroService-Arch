@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "ShubT.MessageBus": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:14995;http://localhost:14996"
+    }
+  }
+}

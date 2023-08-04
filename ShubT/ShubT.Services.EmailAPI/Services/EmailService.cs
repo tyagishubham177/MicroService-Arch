@@ -18,6 +18,7 @@ namespace ShubT.Services.EmailAPI.Services
 
         public async Task EmailCartAndLog(CartDTO cartDTO)
         {
+            //TODO : Make this fancy HTML
             StringBuilder message = new StringBuilder();
 
             message.AppendLine("<br/>Cart Email Requested ");
@@ -38,13 +39,13 @@ namespace ShubT.Services.EmailAPI.Services
         public async Task LogOrderPlaced(RewardsMessage rewardsDto)
         {
             string message = "New Order Placed. <br/> Order ID : " + rewardsDto.OrderId;
-            await LogAndEmail(message, "dotnetmastery@gmail.com");
+            await LogAndEmail(message, rewardsDto.UserId);
         }
 
         public async Task RegisterUserEmailAndLog(string email)
         {
             string message = "User Registeration Successful. <br/> Email : " + email;
-            await LogAndEmail(message, "dotnetmastery@gmail.com");
+            await LogAndEmail(message, email);
         }
 
         private async Task<bool> LogAndEmail(string message, string email)

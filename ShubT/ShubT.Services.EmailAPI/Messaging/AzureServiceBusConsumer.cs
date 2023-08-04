@@ -48,9 +48,9 @@ namespace ShubT.Services.EmailAPI.Messaging
             _registerUserProcessor.ProcessErrorAsync += ErrorHandler;
             await _registerUserProcessor.StartProcessingAsync();
 
-            /*_emailOrderPlacedProcessor.ProcessMessageAsync += OnOrderPlacedRequestReceived;
+            _emailOrderPlacedProcessor.ProcessMessageAsync += OnOrderPlacedRequestReceived;
             _emailOrderPlacedProcessor.ProcessErrorAsync += ErrorHandler;
-            await _emailOrderPlacedProcessor.StartProcessingAsync();*/
+            await _emailOrderPlacedProcessor.StartProcessingAsync();
         }
 
         public async Task Stop()
@@ -58,11 +58,11 @@ namespace ShubT.Services.EmailAPI.Messaging
             await _emailCartProcessor.StopProcessingAsync();
             await _emailCartProcessor.DisposeAsync();
 
-            /*await _registerUserProcessor.StopProcessingAsync();
+            await _registerUserProcessor.StopProcessingAsync();
             await _registerUserProcessor.DisposeAsync();
 
             await _emailOrderPlacedProcessor.StopProcessingAsync();
-            await _emailOrderPlacedProcessor.DisposeAsync();*/
+            await _emailOrderPlacedProcessor.DisposeAsync();
         }
 
         private async Task OnEmailCartRequestReceived(ProcessMessageEventArgs args)

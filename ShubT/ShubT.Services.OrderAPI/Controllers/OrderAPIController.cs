@@ -183,14 +183,16 @@ namespace ShubT.Services.OrderAPI.Controllers
                     orderHeader.PaymentIntentId = paymentIntent.Id;
                     orderHeader.Status = MiscUtils.Status_Approved;
                     _context.SaveChanges();
-                    RewardsDTO rewardsDto = new()
+                    RewardsDTO rewardsDTO = new()
                     {
                         OrderId = orderHeader.OrderHeaderId,
                         RewardsActivity = Convert.ToInt32(orderHeader.OrderTotal),
                         UserId = orderHeader.UserId
                     };
+                    
                     string topicName = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedTopic");
-                    await _messageBus.PublishMessage(rewardsDto, topicName);
+                    await _messageBus.PublishMessage(rewardsDTO, topicName);
+
                     _responseDTO.Result = _mapper.Map<OrderHeaderDTO>(orderHeader);
                 }
 
