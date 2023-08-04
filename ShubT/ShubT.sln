@@ -21,9 +21,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShubT.Services.ProductAPI",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShubT.Services.ShoppingCartAPI", "ShubT.Services.ShoppingCartAPI\ShubT.Services.ShoppingCartAPI.csproj", "{3DEAB6E4-4B0C-4BB2-92A3-895FB09BE054}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShubT.MessageBus", "ShubT.MessageBus\ShubT.MessageBus.csproj", "{2273F733-1C0F-4A48-822F-3E5FD263DDB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShubT.MessageBus", "ShubT.MessageBus\ShubT.MessageBus.csproj", "{2273F733-1C0F-4A48-822F-3E5FD263DDB3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShubT.Services.EmailAPI", "ShubT.Services.EmailAPI\ShubT.Services.EmailAPI.csproj", "{996F4E73-6AC2-43C1-B37A-C97E51B90B7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShubT.Services.EmailAPI", "ShubT.Services.EmailAPI\ShubT.Services.EmailAPI.csproj", "{996F4E73-6AC2-43C1-B37A-C97E51B90B7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShubT.Services.OrderAPI", "ShubT.Services.OrderAPI\ShubT.Services.OrderAPI.csproj", "{A84E263D-9F07-4CDF-B012-2933C1E8D1BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{996F4E73-6AC2-43C1-B37A-C97E51B90B7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{996F4E73-6AC2-43C1-B37A-C97E51B90B7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{996F4E73-6AC2-43C1-B37A-C97E51B90B7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A84E263D-9F07-4CDF-B012-2933C1E8D1BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A84E263D-9F07-4CDF-B012-2933C1E8D1BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A84E263D-9F07-4CDF-B012-2933C1E8D1BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A84E263D-9F07-4CDF-B012-2933C1E8D1BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -71,6 +77,7 @@ Global
 		{3DEAB6E4-4B0C-4BB2-92A3-895FB09BE054} = {821E868F-FFD4-465E-A587-4A7BC7D56792}
 		{2273F733-1C0F-4A48-822F-3E5FD263DDB3} = {F7BBF609-C66B-4DD2-AC08-E7E23570AFD2}
 		{996F4E73-6AC2-43C1-B37A-C97E51B90B7A} = {821E868F-FFD4-465E-A587-4A7BC7D56792}
+		{A84E263D-9F07-4CDF-B012-2933C1E8D1BB} = {821E868F-FFD4-465E-A587-4A7BC7D56792}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6E531799-3367-4F90-A769-F4BFE046C60A}

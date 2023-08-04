@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ShubT.Web.Models;
+using ShubT.Web.Models.Orders;
 using ShubT.Web.Models.ShoppingCart;
 using ShubT.Web.Services.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,10 +12,12 @@ namespace ShubT.Web.Controllers
     public class CartController : Controller
     {
         private readonly ICartService _cartService;
-        //private readonly IOrderService _orderService;
-        public CartController(ICartService cartService)
+        private readonly IOrderService _orderService;
+
+        public CartController(ICartService cartService, IOrderService orderService)
         {
             _cartService = cartService;
+            _orderService = orderService;
         }
 
         [Authorize]
@@ -35,17 +38,17 @@ namespace ShubT.Web.Controllers
         {
 
             CartDTO cart = await LoadCartDTOBasedOnLoggedInUser();
-            /*cart.CartHeaderDTO.Phone = cartDto.CartHeaderDTO.Phone;
+            cart.CartHeaderDTO.Phone = cartDto.CartHeaderDTO.Phone;
             cart.CartHeaderDTO.Email = cartDto.CartHeaderDTO.Email;
             cart.CartHeaderDTO.Name = cartDto.CartHeaderDTO.Name;
 
             var response = await _orderService.CreateOrder(cart);
-            OrderHeaderDto orderHeaderDto = JsonConvert.DeserializeObject<OrderHeaderDto>(Convert.ToString(response.Result));
+            OrderHeaderDTO orderHeaderDto = JsonConvert.DeserializeObject<OrderHeaderDTO>(Convert.ToString(response.Result));
 
             if (response != null && response.IsSuccess)
             {
-                //get stripe session and redirect to stripe to place order
-                //
+                /*get stripe session and redirect to stripe to place order
+                
                 var domain = Request.Scheme + "://" + Request.Host.Value + "/";
 
                 StripeRequestDto stripeRequestDto = new()
@@ -59,8 +62,9 @@ namespace ShubT.Web.Controllers
                 StripeRequestDto stripeResponseResult = JsonConvert.DeserializeObject<StripeRequestDto>
                                             (Convert.ToString(stripeResponse.Result));
                 Response.Headers.Add("Location", stripeResponseResult.StripeSessionUrl);
-                return new StatusCodeResult(303);
-            }*/
+                return new StatusCodeResult(303);*/
+            }
+
             return View(cart);
         }
 
