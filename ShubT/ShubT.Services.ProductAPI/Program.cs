@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using ShubT.Services.ProductAPI;
 using ShubT.Services.ProductAPI.Data;
+using ShubT.Services.ProductAPI.Exceptions;
 using ShubT.Services.ProductAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,6 +54,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseMiddleware<ExceptionMiddleware>();
 }
 
 app.UseHttpsRedirection();
@@ -60,6 +62,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseStaticFiles();
 
 app.MapControllers();
 

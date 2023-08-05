@@ -2,6 +2,7 @@
 using ShubT.Web.Models;
 using ShubT.Web.Services.Interfaces;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using static ShubT.Web.Models.ProjectEnums;
 
@@ -22,10 +23,17 @@ namespace ShubT.Web.Services
         {
             try
             {
-                HttpClient httpClient = _clientFactory.CreateClient("ShubTAPI");
+                HttpClient client = _clientFactory.CreateClient("ShubTAPI");
                 HttpRequestMessage message = new();
-                message.Headers.Add("Accept", "application/json");
-
+                if (requestDTO.ContentType == ContentType.MultipartFormData)
+                {
+                    message.Headers.Add("Accept", "*/*");
+                }
+                else
+                {
+                    message.Headers.Add("Accept", "application/json");
+                }
+                //token
                 if (withBearer)
                 {
                     var token = _tokenProvider.GetToken();
@@ -34,71 +42,83 @@ namespace ShubT.Web.Services
 
                 message.RequestUri = new Uri(requestDTO.Url);
 
-                message.Method = requestDTO.ApiType switch
+                if (requestDTO.ContentType == ContentType.MultipartFormData)
                 {
-                    ApiType.GET => HttpMethod.Get,
-                    ApiType.POST => HttpMethod.Post,
-                    ApiType.PUT => HttpMethod.Put,
-                    ApiType.DELETE => HttpMethod.Delete,
-                    _ => HttpMethod.Get,
-                };
+                    var content = new MultipartFormDataContent();
 
-                if (requestDTO.Data != null)
+                    foreach (var prop in requestDTO.Data.GetType().GetProperties())
+                    {
+                        var value = prop.GetValue(requestDTO.Data);
+                        if (value is FormFile)
+                        {
+                            var file = (FormFile)value;
+                            if (file != null)
+                            {
+                                content.Add(new StreamContent(file.OpenReadStream()), prop.Name, file.FileName);
+                            }
+                        }
+                        else
+                        {
+                            content.Add(new StringContent(value == null ? "" : value.ToString()), prop.Name);
+                        }
+                    }
+                    message.Content = content;
+                }
+                else
                 {
-                    message.Content = new StringContent(JsonConvert.SerializeObject(requestDTO.Data), Encoding.UTF8, "application/json");
+                    if (requestDTO.Data != null)
+                    {
+                        message.Content = new StringContent(JsonConvert.SerializeObject(requestDTO.Data), Encoding.UTF8, "application/json");
+                    }
                 }
 
-                HttpResponseMessage? responseMessage = null;
+                HttpResponseMessage? apiResponse = null;
 
-                responseMessage = await httpClient.SendAsync(message);
+                switch (requestDTO.ApiType)
+                {
+                    case ApiType.POST:
+                        message.Method = HttpMethod.Post;
+                        break;
+                    case ApiType.DELETE:
+                        message.Method = HttpMethod.Delete;
+                        break;
+                    case ApiType.PUT:
+                        message.Method = HttpMethod.Put;
+                        break;
+                    default:
+                        message.Method = HttpMethod.Get;
+                        break;
+                }
 
-                switch (responseMessage.StatusCode)
+                apiResponse = await client.SendAsync(message);
+
+                switch (apiResponse.StatusCode)
                 {
                     case HttpStatusCode.NotFound:
-                        return new ResponseDTO
-                        {
-                            IsSuccess = false,
-                            DisplayMessage = "Resource not found"
-                        };
-                    case HttpStatusCode.Unauthorized:
-                        return new ResponseDTO
-                        {
-                            IsSuccess = false,
-                            DisplayMessage = "Unauthorized"
-                        };
-                    case HttpStatusCode.BadRequest:
-                        return new ResponseDTO
-                        {
-                            IsSuccess = false,
-                            DisplayMessage = "Bad Request"
-                        };
+                        return new() { IsSuccess = false, DisplayMessage = "Not Found" };
                     case HttpStatusCode.Forbidden:
-                        return new ResponseDTO
-                        {
-                            IsSuccess = false,
-                            DisplayMessage = "Forbidden"
-                        };
+                        return new() { IsSuccess = false, DisplayMessage = "Access Denied" };
+                    case HttpStatusCode.Unauthorized:
+                        return new() { IsSuccess = false, DisplayMessage = "Unauthorized" };
                     case HttpStatusCode.InternalServerError:
-                        return new ResponseDTO
-                        {
-                            IsSuccess = false,
-                            DisplayMessage = "Internal Server Error"
-                        };
+                        return new() { IsSuccess = false, DisplayMessage = "Internal Server Error" };
+                    case HttpStatusCode.UnsupportedMediaType:
+                        var apiContent = await apiResponse.Content.ReadAsStringAsync();
+                        return new() { IsSuccess = false, DisplayMessage = "Unsupported Media Type" };
                     default:
-                        {
-                            var apiContent = await responseMessage.Content.ReadAsStringAsync();
-                            var responseDTO = JsonConvert.DeserializeObject<ResponseDTO>(apiContent);
-                            return responseDTO;
-                        }
+                        apiContent = await apiResponse.Content.ReadAsStringAsync();
+                        var apiResponseDto = JsonConvert.DeserializeObject<ResponseDTO>(apiContent);
+                        return apiResponseDto;
                 }
             }
             catch (Exception ex)
             {
-                return new ResponseDTO
+                var dto = new ResponseDTO
                 {
-                    IsSuccess = false,
-                    DisplayMessage = ex.Message
+                    DisplayMessage = ex.Message.ToString(),
+                    IsSuccess = false
                 };
+                return dto;
             }
         }
     }

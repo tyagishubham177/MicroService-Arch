@@ -11,13 +11,13 @@ namespace ShubT.Services.ProductAPI.Controllers
     [ApiController]
     public class ProductAPIController : ControllerBase
     {
-        private readonly AppDbContext _db;
+        private readonly AppDbContext _context;
         private ResponseDTO _response;
         private IMapper _mapper;
 
-        public ProductAPIController(AppDbContext db, IMapper mapper)
+        public ProductAPIController(AppDbContext context, IMapper mapper)
         {
-            _db = db;
+            _context = context;
             _mapper = mapper;
             _response = new ResponseDTO();
         }
@@ -27,7 +27,7 @@ namespace ShubT.Services.ProductAPI.Controllers
         {
             try
             {
-                IEnumerable<Product> objList = _db.Products.ToList();
+                IEnumerable<Product> objList = _context.Products.ToList();
                 _response.Result = _mapper.Map<IEnumerable<ProductDTO>>(objList);
             }
             catch (Exception ex)
@@ -44,7 +44,7 @@ namespace ShubT.Services.ProductAPI.Controllers
         {
             try
             {
-                Product obj = _db.Products.First(u => u.ProductId == id);
+                Product obj = _context.Products.First(u => u.ProductId == id);
                 _response.Result = _mapper.Map<ProductDTO>(obj);
             }
             catch (Exception ex)
@@ -57,13 +57,13 @@ namespace ShubT.Services.ProductAPI.Controllers
 
         [HttpPost]
         [Authorize(Roles = "ADMIN")]
-        public ResponseDTO Post(ProductDTO ProductDTO)
+        public ResponseDTO Post([FromForm] ProductDTO ProductDTO)
         {
             try
             {
                 Product product = _mapper.Map<Product>(ProductDTO);
-                _db.Products.Add(product);
-                _db.SaveChanges();
+                _context.Products.Add(product);
+                _context.SaveChanges();
 
                 if (ProductDTO.Image != null)
                 {
@@ -71,7 +71,7 @@ namespace ShubT.Services.ProductAPI.Controllers
                     string fileName = product.ProductId + Path.GetExtension(ProductDTO.Image.FileName);
                     string filePath = @"wwwroot\ProductImages\" + fileName;
 
-                    //I have added the if condition to remove the any image with same name if that exist in the folder by any change
+                    //Added the if condition to remove the any image with same name if that exist in the folder by any change
                     var directoryLocation = Path.Combine(Directory.GetCurrentDirectory(), filePath);
                     FileInfo file = new FileInfo(directoryLocation);
                     if (file.Exists)
@@ -92,8 +92,8 @@ namespace ShubT.Services.ProductAPI.Controllers
                 {
                     product.ImageUrl = "https://placehold.co/600x400";
                 }
-                _db.Products.Update(product);
-                _db.SaveChanges();
+                _context.Products.Update(product);
+                _context.SaveChanges();
                 _response.Result = _mapper.Map<ProductDTO>(product);
             }
             catch (Exception ex)
@@ -107,7 +107,7 @@ namespace ShubT.Services.ProductAPI.Controllers
 
         [HttpPut]
         [Authorize(Roles = "ADMIN")]
-        public ResponseDTO Put(ProductDTO ProductDTO)
+        public ResponseDTO Put([FromForm] ProductDTO ProductDTO)
         {
             try
             {
@@ -138,8 +138,8 @@ namespace ShubT.Services.ProductAPI.Controllers
                 }
 
 
-                _db.Products.Update(product);
-                _db.SaveChanges();
+                _context.Products.Update(product);
+                _context.SaveChanges();
 
                 _response.Result = _mapper.Map<ProductDTO>(product);
             }
@@ -158,7 +158,7 @@ namespace ShubT.Services.ProductAPI.Controllers
         {
             try
             {
-                Product obj = _db.Products.First(u => u.ProductId == id);
+                Product obj = _context.Products.First(u => u.ProductId == id);
                 if (!string.IsNullOrEmpty(obj.ImageLocalPath))
                 {
                     var oldFilePathDirectory = Path.Combine(Directory.GetCurrentDirectory(), obj.ImageLocalPath);
@@ -168,8 +168,8 @@ namespace ShubT.Services.ProductAPI.Controllers
                         file.Delete();
                     }
                 }
-                _db.Products.Remove(obj);
-                _db.SaveChanges();
+                _context.Products.Remove(obj);
+                _context.SaveChanges();
             }
             catch (Exception ex)
             {
