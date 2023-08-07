@@ -3,7 +3,7 @@ using ShubT.Services.EmailAPI.Data;
 using ShubT.Services.EmailAPI.DTOs;
 using ShubT.Services.EmailAPI.Message;
 using ShubT.Services.EmailAPI.Models;
-using System.Text;
+using ShubT.Services.EmailAPI.Utils;
 
 namespace ShubT.Services.EmailAPI.Services
 {
@@ -18,22 +18,8 @@ namespace ShubT.Services.EmailAPI.Services
 
         public async Task EmailCartAndLog(CartDTO cartDTO)
         {
-            //TODO : Make this fancy HTML
-            StringBuilder message = new StringBuilder();
-
-            message.AppendLine("<br/>Cart Email Requested ");
-            message.AppendLine("<br/>Total " + cartDTO.CartHeaderDTO.CartTotal);
-            message.Append("<br/>");
-            message.Append("<ul>");
-            foreach (var item in cartDTO.CartDetailsDTO)
-            {
-                message.Append("<li>");
-                message.Append(item.ProductDTO.Name + " x " + item.Count);
-                message.Append("</li>");
-            }
-            message.Append("</ul>");
-
-            await LogAndEmail(message.ToString(), cartDTO.CartHeaderDTO.Email);
+            string message = MiscUtils.BuildHTMLCartString(cartDTO);
+            await LogAndEmail(message, cartDTO.CartHeaderDTO.Email);
         }
 
         public async Task LogOrderPlaced(RewardsMessage rewardsDto)

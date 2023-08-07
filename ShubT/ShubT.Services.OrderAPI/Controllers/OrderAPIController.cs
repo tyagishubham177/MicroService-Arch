@@ -6,6 +6,7 @@ using ShubT.MessageBus;
 using ShubT.Services.OrderAPI.Data;
 using ShubT.Services.OrderAPI.DTOs;
 using ShubT.Services.OrderAPI.Models;
+using ShubT.Services.OrderAPI.RabbitMQSender;
 using ShubT.Services.OrderAPI.Service.Interfaces;
 using ShubT.Web.Utils;
 using Stripe;
@@ -21,11 +22,11 @@ namespace ShubT.Services.OrderAPI.Controllers
         private IMapper _mapper;
         private readonly AppDbContext _context;
         private IProductService _productService;
-        private readonly IMessageBus _messageBus;
+        private readonly IRabbitMQOrderMessageSender _messageBus;
         private readonly IConfiguration _configuration;
 
         public OrderAPIController(AppDbContext context, IProductService productService, IMapper mapper,
-            IConfiguration configuration, IMessageBus messageBus)
+            IConfiguration configuration, IRabbitMQOrderMessageSender messageBus)
         {
             _context = context;
             this._responseDTO = new ResponseDTO();
@@ -189,7 +190,7 @@ namespace ShubT.Services.OrderAPI.Controllers
                     };
 
                     string topicName = _configuration.GetValue<string>("TopicAndQueueNames:OrderCreatedTopic");
-                    await _messageBus.PublishMessage(rewardsDTO, topicName);
+                    _messageBus.SendMessage(rewardsDTO, topicName);
 
                     _responseDTO.Result = _mapper.Map<OrderHeaderDTO>(orderHeader);
                 }

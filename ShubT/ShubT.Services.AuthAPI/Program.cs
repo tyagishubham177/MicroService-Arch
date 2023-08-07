@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ShubT.MessageBus;
 using ShubT.Services.AuthAPI.Data;
 using ShubT.Services.AuthAPI.Models;
+using ShubT.Services.AuthAPI.RabbitMQSender;
 using ShubT.Services.AuthAPI.Services;
 using ShubT.Services.AuthAPI.Services.Interfaces;
 
@@ -20,7 +21,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJWTTokenGenerator, JWTTokenGenerator>();
-builder.Services.AddScoped<IMessageBus, MessageBus>();
+builder.Services.AddScoped<IRabbitMQAuthMessageSender, RabbitMQAuthMessageSender>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

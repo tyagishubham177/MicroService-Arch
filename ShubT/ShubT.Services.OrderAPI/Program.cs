@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using ShubT.MessageBus;
 using ShubT.Services.OrderAPI;
 using ShubT.Services.OrderAPI.Data;
 using ShubT.Services.OrderAPI.Extensions;
+using ShubT.Services.OrderAPI.RabbitMQSender;
 using ShubT.Services.OrderAPI.Service;
 using ShubT.Services.OrderAPI.Service.Interfaces;
 using ShubT.Services.OrderAPI.Utility;
@@ -21,7 +21,8 @@ builder.Services.AddAutoMapper(typeof(MappingConfig).Assembly);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<BackendApiAuthenticationHttpClientHandler>();
 builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IMessageBus, MessageBus>();
+builder.Services.AddScoped<IRabbitMQOrderMessageSender, RabbitMQOrderMessageSender>();
+//builder.Services.AddScoped<IMessageBus, MessageBus>();
 
 builder.Services.AddHttpClient("Product", u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:ProductAPI"]))
     .AddHttpMessageHandler<BackendApiAuthenticationHttpClientHandler>();

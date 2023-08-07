@@ -5,6 +5,7 @@ using ShubT.MessageBus;
 using ShubT.Services.ShoppingCartAPI.Data;
 using ShubT.Services.ShoppingCartAPI.DTOs;
 using ShubT.Services.ShoppingCartAPI.Models;
+using ShubT.Services.ShoppingCartAPI.RabbitMQSender;
 using ShubT.Services.ShoppingCartAPI.Service.Interfaces;
 
 namespace ShubT.Services.ShoppingCartAPI.Controllers
@@ -17,12 +18,12 @@ namespace ShubT.Services.ShoppingCartAPI.Controllers
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
         private readonly ICouponService _couponService;
-        private readonly IMessageBus _messageBus;
+        private readonly IRabbitMQCartMessageSender _messageBus;
         private readonly IConfiguration _configuration;
         private ResponseDTO _responseDTO;
 
         public CartAPIController(AppDbContext context, IMapper mapper, IProductService productService,
-            ICouponService couponService, IMessageBus messageBus, IConfiguration configuration)
+            ICouponService couponService, IRabbitMQCartMessageSender messageBus, IConfiguration configuration)
         {
             _context = context;
             _mapper = mapper;
@@ -199,7 +200,8 @@ namespace ShubT.Services.ShoppingCartAPI.Controllers
             try
             {
                 string topic_queue_name = _configuration.GetValue<string>("TopicAndQueueNames:EmailShoppingCartQueue");
-                await _messageBus.PublishMessage(cartDto, topic_queue_name);
+                //_messageBus.PublishMessage(cartDto, topic_queue_name); // Azure Topic
+                _messageBus.SendMessage(cartDto, topic_queue_name);
                 _responseDTO.Result = true;
             }
             catch (Exception ex)

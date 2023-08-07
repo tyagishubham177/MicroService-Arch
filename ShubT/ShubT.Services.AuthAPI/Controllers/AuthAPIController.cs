@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ShubT.MessageBus;
 using ShubT.Services.AuthAPI.DTOs;
+using ShubT.Services.AuthAPI.RabbitMQSender;
 using ShubT.Services.AuthAPI.Services.Interfaces;
 
 namespace ShubT.Services.AuthAPI.Controllers
@@ -10,14 +11,14 @@ namespace ShubT.Services.AuthAPI.Controllers
     public class AuthAPIController : ControllerBase
     {
         private readonly IAuthService _authService;
-        private readonly IMessageBus _messageBus;
+        private readonly IRabbitMQAuthMessageSender _messageSender;
         private readonly IConfiguration _configuration;
         protected ResponseDTO _responseDTO;
 
-        public AuthAPIController(IAuthService authService, IMessageBus messageBus, IConfiguration configuration)
+        public AuthAPIController(IAuthService authService, IRabbitMQAuthMessageSender messageSender, IConfiguration configuration)
         {
             _authService = authService;
-            _messageBus = messageBus;
+            _messageSender = messageSender;
             _responseDTO = new ResponseDTO();
             _configuration = configuration;
 
@@ -36,7 +37,7 @@ namespace ShubT.Services.AuthAPI.Controllers
                 return Ok(_responseDTO);
             }
 
-            await _messageBus.PublishMessage(model.Email, _configuration.GetValue<string>("TopicAndQueueNames:RegisterUserQueue"));
+            _messageSender.SendMessage(model.Email, _configuration.GetValue<string>("TopicAndQueueNames:RegisterUserQueue"));
 
             return Ok(_responseDTO);
         }
